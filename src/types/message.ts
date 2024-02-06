@@ -9,10 +9,19 @@ export interface ConversationInfo {
   isGroup: boolean;
 }
 
-export interface Message {
-  id: number;
-  to: number; // id that sent message
-  from: number; // id that received message
+// message without id
+export interface SendingMessage {
+  from: string; // id that received message
   message: string; // the message
-  time: Date; //timestamp
+  time: String; //unix timestamp
+  // to: string; // user that sent message
+}
+
+export interface Message extends SendingMessage {
+  id: number;
+}
+
+export interface ReceivedMessage {
+  message: string;
+  from: string;
 }

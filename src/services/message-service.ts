@@ -1,18 +1,29 @@
+import axios from "axios";
 import { Conversation, Message } from "../types/message";
 
-export function getAllMessages(): Message[] {
-  return [
-    { id: 1, to: 1, from: 2, message: "hello", time: new Date() },
-    { id: 2, to: 2, from: 1, message: "hello back", time: new Date() },
-  ];
+export async function getAllMessagesById(userId: number): Promise<Message[]> {
+  console.log("getting messages" + userId);
+  return await axios.get(`http://localhost:8080/messages?userId=${userId}`);
 }
 
-export function getAllConversations(): Conversation[] {
+export async function getAllMessages(token: string): Promise<Message[]> {
+  console.log("getting all messages");
+  let resp = await axios.get(`http://localhost:8080/messages`, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+  return resp.data;
+}
+
+export async function getAllConversations(
+  token: string
+): Promise<Conversation[]> {
   return [
     {
       id: 1,
       userIds: [1, 2],
-      messages: getAllMessages(),
+      messages: await getAllMessages(token),
     },
   ];
 }
