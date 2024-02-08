@@ -16,33 +16,36 @@ const ConversationContainer = (/*{ userData }: { userData: UserData }*/) => {
   const [sendingMessage, setSendingMessage] = useState("");
   const [stompClient, setStompClient] = useState(over(new SockJS(SOCKET_URL)));
 
-  const onConnected = useCallback(() => {
-    function onMessageReceived(payload: StompMessage) {
-      console.log(messages);
-      console.log("message received");
-      let payloadData: Message = JSON.parse(payload.body);
-      console.log(payloadData);
-      const newMessage: Message = {
-        message: payloadData.message,
-        from: payloadData.from,
-        id: payloadData.id,
-        time: payloadData.time,
-      };
-      //setMessages([...messages, newMessage]);
-    }
-
-    console.log("subscribing");
-    stompClient.subscribe("/chatroom/public", onMessageReceived);
-  }, [messages, stompClient]);
+  
 
   useEffect(() => {
+    function onConnected() {
+      function onMessageReceived(payload: StompMessage) {
+        console.log(messages);
+        console.log("message received");
+        let payloadData: Message = JSON.parse(payload.body);
+        console.log(payloadData);
+        const newMessage: Message = {
+          message: payloadData.message,
+          from: payloadData.from,
+          id: payloadData.id,
+          time: payloadData.time,
+        };
+        setMessages(messages => [...messages, newMessage]);
+      }
+  
+      console.log("subscribing");
+      stompClient.subscribe("/chatroom/public", onMessageReceived);
+    };
+
     getAllMessages(userData.jwt).then((messages) => {
       console.log("got messages");
       console.log(messages);
       setMessages(messages);
     });
     stompClient.connect({}, onConnected, onError);
-  }, [onConnected, stompClient, userData]);
+    console.log(userData)
+  }, []);
 
   function sendMessage() {
     let chatMessage: SendingMessage = {

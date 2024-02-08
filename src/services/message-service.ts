@@ -7,7 +7,6 @@ export async function getAllMessagesById(userId: number): Promise<Message[]> {
 }
 
 export async function getAllMessages(token: string): Promise<Message[]> {
-  console.log("getting all messages");
   let resp = await axios.get(`http://localhost:8080/messages`, {
     headers: {
       Authorization: "Bearer " + token,

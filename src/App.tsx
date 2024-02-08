@@ -25,8 +25,7 @@ function App() {
       <UserContext.Provider value={{ userData, setUserData }}>
         <div className="grid grid-cols-12 h-screen">
           <SidebarContainer logOut={logOut}></SidebarContainer>
-          <ConversationContainer /*userData={userData}*/
-          ></ConversationContainer>
+          <ConversationContainer></ConversationContainer>
         </div>
       </UserContext.Provider>
     </div>
