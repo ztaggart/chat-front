@@ -1,11 +1,10 @@
+import { User } from "./user";
+
 export interface Conversation {
   id: number;
   users: User[];
   messages: Message[];
-}
-
-export interface User {
-  id: number;
+  topic?: string;
 }
 
 export interface ConversationInfo {
