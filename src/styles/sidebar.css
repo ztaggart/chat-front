@@ -1,0 +1,7 @@
+.active.conversation {
+    background-color: var(--accent-color)
+}
+
+.active.conversation:hover {
+    background-color: #a5a5a5
+}
