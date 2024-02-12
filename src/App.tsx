@@ -4,6 +4,8 @@ import ConversationContainer from "./components/conversation-container";
 import SidebarContainer from "./components/sidebar-container";
 import LoginPage from "./components/login-page";
 import { UserData, useUserData } from "./hooks/use-userdata";
+import { over } from "stompjs";
+import SockJS from "sockjs-client";
 
 export const UserContext = createContext(
   /*<{
@@ -14,6 +16,11 @@ export const UserContext = createContext(
     setUserData: (userData: UserData) => {},
   }
 );
+
+const SOCKET_URL = "http://localhost:8080/chat";
+export const StompContext = createContext({
+  stompClient: over(new SockJS(SOCKET_URL))
+})
 
 function App() {
   const [userData, setUserData, logOut] = useUserData();

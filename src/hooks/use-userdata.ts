@@ -36,9 +36,12 @@ export function useUserData(): [
   }, []);
 
   function setUserData(userData: UserData) {
+    console.log("setting user data");
+    console.log(userData);
     setUsername(userData.username);
     localStorage.setItem(USERNAME, userData.username);
     setJwt(userData.jwt);
+    setUserId(userData.userId);
     localStorage.setItem(JWT, userData.jwt);
   }
 

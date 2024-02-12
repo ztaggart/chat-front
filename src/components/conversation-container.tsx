@@ -6,17 +6,15 @@ import { Client, Message as StompMessage, over } from "stompjs";
 import SockJS from "sockjs-client";
 import { Message, ReceivedMessage, SendingMessage } from "../types/message";
 import { UserData } from "../hooks/use-userdata";
-import { UserContext } from "../App";
+import { StompContext, UserContext } from "../App";
 
 const SOCKET_URL = "http://localhost:8080/chat";
 
-const ConversationContainer = (/*{ userData }: { userData: UserData }*/) => {
+const ConversationContainer = () => {
   const { userData, setUserData } = useContext(UserContext);
+  const {stompClient} = useContext(StompContext)
   const [messages, setMessages] = useState<Message[]>([]);
-  const [sendingMessage, setSendingMessage] = useState("");
-  const [stompClient, setStompClient] = useState(over(new SockJS(SOCKET_URL)));
-
-  
+  const [sendingMessage, setSendingMessage] = useState(""); 
 
   useEffect(() => {
     function onConnected() {
@@ -43,18 +41,20 @@ const ConversationContainer = (/*{ userData }: { userData: UserData }*/) => {
       console.log(messages);
       setMessages(messages);
     });
-    stompClient.connect({}, onConnected, onError);
-    console.log(userData)
+    stompClient.connect({Authorization: "Bearer " + userData.jwt}, onConnected, onError);
   }, []);
 
   function sendMessage() {
+    console.log('message')
     let chatMessage: SendingMessage = {
       message: sendingMessage,
       from: userData.username,
       time: new Date(Date.now()).toISOString(),
     };
     console.log(chatMessage);
-    stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+    stompClient.send("/app/chat", {
+        Authorization: "Bearer " + userData.jwt,
+    }, JSON.stringify(chatMessage));
     setSendingMessage("");
   }
 

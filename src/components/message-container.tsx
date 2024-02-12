@@ -11,13 +11,13 @@ const MessageContainer = ({ message }: { message: Message }) => {
         userData.username === message.from ? "justify-end" : "justify-start"
       } w-full`}
     >
-      <div className="m-2 bg-slate-600 shadow-md rounded-xl w-3/4">
+      <div className="m-2 bg-slate-600 shadow-md rounded-xl max-w-3/4">
         <div className="m-2">
-          From:{" " + message.from}
+          <a href="#" className="text-slate-200">{" " + message.from}</a> {message.time}
           <br />
           <span className="text-slate-200 break-words">{message.message}</span>
           <br />
-          {message.time}
+          
         </div>
       </div>
     </div>

@@ -1,11 +1,21 @@
+import { useContext, useEffect, useState } from "react";
 import "../App.css";
 import { useUserData } from "../hooks/use-userdata";
 import { getAllConversations } from "../services/message-service";
 import { Conversation } from "../types/message";
 import ConversationInfo from "./conversation-info";
+import { UserContext } from "../App";
 
 const SidebarContainer = ({ logOut }: { logOut: () => void }) => {
-  const conversations: Conversation[] = []; //getAllConversations();
+  const { userData, setUserData } = useContext(UserContext);
+  const [conversations, setConversations] = useState<Conversation[]>([])
+
+  useEffect(() => {
+    getAllConversations(userData.jwt, userData.userId).then((convs) => {
+      setConversations(convs)
+      console.log(convs);
+    })
+  }, [])
   return (
     <div className="col-span-4 bg-red-600">
       <div className="m-4">

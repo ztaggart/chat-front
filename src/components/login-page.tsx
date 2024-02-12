@@ -1,11 +1,6 @@
-import { createContext, useState } from "react";
+import { useState } from "react";
 import * as userService from "../services/user-service";
-import { UserData, useUserData } from "../hooks/use-userdata";
-
-export const userContext = createContext({
-  username: "",
-  jwt: "",
-});
+import { UserData} from "../hooks/use-userdata";
 
 const LoginPage = ({
   setUserData,
@@ -25,7 +20,7 @@ const LoginPage = ({
       let jwt = resp.data.jwt;
       let userId = resp.data.userId;
       setShowError(false);
-      setUserData({ username: user, jwt: jwt, userId: userId });
+      setUserData({ username: user, jwt, userId});
     } catch (e) {
       setShowError(true);
       setErrorMessage("The entered username or password does not exist.");

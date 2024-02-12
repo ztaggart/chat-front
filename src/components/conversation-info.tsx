@@ -7,32 +7,33 @@ const ConversationInfo = ({ conversation }: { conversation: Conversation }) => {
   return (
     <div className="m-4 flex bg-slate-500 rounded-md">
       <div className="w-8">
-        {conversation.userIds.map((userId) => {
-          let profilePicture = getProfilePicture(userId);
+        {conversation.users.map((user) => {
+          let profilePicture = defaultPicture//getProfilePicture(user);
           return (
             <img
-              key={userId}
+              key={user.id}
               className="rounded-full"
               src={profilePicture ? profilePicture : defaultPicture}
+              alt="profile"
             ></img>
           );
         })}{" "}
       </div>
       <div className="w-full ml-2">
         <div className="text-lg font-medium">
-          {conversation.userIds.map((userId) => {
+          {/* {conversation.users.map((user) => {
             if (
-              userId !== conversation.userIds[conversation.userIds.length - 1]
+              user.id !== conversation.users[conversation.users.length - 1].id
             ) {
               return getUser(userId).username + ", ";
             } else {
               return getUser(userId).username;
             }
-          })}
+          })} */}
         </div>
-        <div className="text-slate-200">
+        {/* <div className="text-slate-200">
           {conversation.messages[conversation.messages.length - 1].message}
-        </div>
+        </div> */}
       </div>
     </div>
   );

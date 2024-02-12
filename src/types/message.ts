@@ -1,7 +1,11 @@
 export interface Conversation {
   id: number;
-  userIds: number[];
+  users: User[];
   messages: Message[];
+}
+
+export interface User {
+  id: number;
 }
 
 export interface ConversationInfo {

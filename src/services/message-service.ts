@@ -16,13 +16,15 @@ export async function getAllMessages(token: string): Promise<Message[]> {
 }
 
 export async function getAllConversations(
-  token: string
+  token: string,
+  userId: number
 ): Promise<Conversation[]> {
-  return [
-    {
-      id: 1,
-      userIds: [1, 2],
-      messages: await getAllMessages(token),
+  console.log("getting conversations");
+  let resp = await axios.get(`http://localhost:8080/conversations/${userId}`, {
+    headers: {
+      Authorization: "Bearer " + token,
     },
-  ];
+  });
+  console.log("got conversations");
+  return resp.data;
 }
