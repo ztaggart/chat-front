@@ -1,6 +1,7 @@
 import { getProfilePicture, getUser } from "../services/user-service";
 import { Conversation } from "../types/message";
 import "../styles/sidebar.css";
+import ProfilePictureContainer from "./profile-picture-container";
 
 const ConversationInfo = ({
   conversation,
@@ -18,17 +19,9 @@ const ConversationInfo = ({
       }
     >
       <div className="w-8 flex-2">
-        {conversation.users.map((user) => {
-          let profilePicture = defaultPicture; //getProfilePicture(user);
-          return (
-            <img
-              key={user.id}
-              className="rounded-full"
-              src={profilePicture ? profilePicture : defaultPicture}
-              alt="profile"
-            ></img>
-          );
-        })}
+        <ProfilePictureContainer
+          users={conversation.users}
+        ></ProfilePictureContainer>
       </div>
       <div className="w-full ml-2 flex items-center">
         <span className="pb-1 pl-5">

@@ -6,28 +6,35 @@ import { Conversation } from "../types/message";
 import ConversationInfo from "./conversation-info";
 import { UserContext } from "../App";
 
-const SidebarContainer = ({ logOut }: { logOut: () => void }) => {
-  const { userData, setUserData } = useContext(UserContext);
+const SidebarContainer = ({
+  logOut,
+  activeConversation,
+  setActiveConversation,
+}: {
+  logOut: () => void;
+  activeConversation: Conversation | undefined;
+  setActiveConversation: (conv: Conversation) => void;
+}) => {
+  const { userData } = useContext(UserContext);
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeConversation, setActiveConversation] = useState(-1);
 
   useEffect(() => {
     getAllConversations(userData.jwt, userData.userId).then((convs) => {
       setConversations(convs);
       if (convs.length > 0) {
-        setActiveConversation(convs[0].id);
+        setActiveConversation(convs[0]);
       }
       console.log(convs);
     });
   }, []);
   return (
-    <div className="col-span-4 bg-slate-300 flex flex-col justify-between">
+    <div className="bg-slate-300 flex flex-col justify-between w-1/4">
       {conversations.map((conversation) => {
         return (
           <ConversationInfo
             key={conversation.id}
             conversation={conversation}
-            active={activeConversation === conversation.id}
+            active={activeConversation?.id === conversation.id}
           ></ConversationInfo>
         );
       })}
