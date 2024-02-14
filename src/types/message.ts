@@ -17,6 +17,7 @@ export interface SendingMessage {
   from: string; // id that received message
   message: string; // the message
   time: String; //unix timestamp
+  conversationId: number;
   // to: string; // user that sent message
 }
 
