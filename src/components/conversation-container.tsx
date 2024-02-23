@@ -11,8 +11,9 @@ import {
   SendingMessage,
 } from "../types/message";
 import { UserData } from "../hooks/use-userdata";
-import { StompContext, UserContext } from "../App";
+import { UserContext } from "../App";
 import ProfilePictureContainer from "./profile-picture-container";
+import ChatBox from "./chat-box";
 
 const SOCKET_URL = "http://localhost:8080/chat";
 
@@ -22,60 +23,66 @@ const ConversationContainer = ({
   activeConversation: Conversation | undefined;
 }) => {
   const { userData, setUserData } = useContext(UserContext);
-  const { stompClient } = useContext(StompContext);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [sendingMessage, setSendingMessage] = useState("");
+  const [client, setClient] = useState<Client | undefined>(undefined);
+  const [clientConnected, setClientConnected] = useState(false);
 
-  function onConnected() {
-    function onMessageReceived(payload: StompMessage) {
-      console.log(messages);
-      console.log("message received");
-      let payloadData: Message = JSON.parse(payload.body);
-      console.log(payloadData);
-      const newMessage: Message = {
-        message: payloadData.message,
-        from: payloadData.from,
-        id: payloadData.id,
-        time: payloadData.time,
-        conversationId: payloadData.conversationId,
-      };
-      setMessages((messages) => [...messages, newMessage]);
-    }
-    console.log("subscribing");
-    // stompClient.subscribe("/chatroom/public", onMessageReceived);
+  function onMessageReceived(payload: StompMessage) {
+    let payloadData: Message = JSON.parse(payload.body);
+    const newMessage: Message = {
+      message: payloadData.message,
+      from: payloadData.from,
+      id: payloadData.id,
+      time: payloadData.time,
+      conversationId: payloadData.conversationId,
+    };
+    setMessages((messages) => [...messages, newMessage]);
   }
 
   useEffect(() => {
-    // getAllMessages(userData.jwt).then((messages) => {
-    //   setMessages(messages);
-    // });
-    stompClient.connect(
-      { Authorization: "Bearer " + userData.jwt },
-      onConnected,
+    const socket = new SockJS("http://localhost:8080/chat");
+    const client = over(socket);
+
+    client.connect(
+      {},
+      () => {
+        client?.subscribe("/chatroom/public", onMessageReceived);
+      },
       onError
     );
+
+    setClient(client);
+
+    getAllMessages(userData.jwt).then((messages) => setMessages(messages));
+    return () => {
+      if (clientConnected) {
+        client.disconnect(() => console.log("disconnected"));
+      } else {
+        setTimeout(
+          () => client.disconnect(() => console.log("disconnected")),
+          1000
+        );
+      }
+    };
   }, []);
 
-  function sendMessage() {
-    console.log("message");
-    if (!activeConversation) {
+  function sendMessage(msg: string) {
+    if (!activeConversation || !client) {
       return;
     }
     let chatMessage: SendingMessage = {
-      message: sendingMessage,
+      message: msg,
       from: userData.username,
       time: new Date(Date.now()).toISOString(),
       conversationId: activeConversation.id,
     };
-    console.log(chatMessage);
-    stompClient.send(
+    client.send(
       "/app/chat",
       {
         Authorization: "Bearer " + userData.jwt,
       },
       JSON.stringify(chatMessage)
     );
-    setSendingMessage("");
   }
 
   function onError() {
@@ -83,7 +90,7 @@ const ConversationContainer = ({
   }
 
   return (
-    <div className="bg-slate-100 w-3/4 flex flex-col">
+    <div className="bg-slate-100 w-3/4 flex flex-col relative">
       {activeConversation && (
         <div className="banner bg-sky-400 flex">
           <div className="w-8 ml-2">
@@ -97,7 +104,7 @@ const ConversationContainer = ({
           </div>
         </div>
       )}
-      <div>
+      <div className="overflow-auto">
         {messages.map((message) => (
           <MessageContainer
             message={message}
@@ -105,17 +112,7 @@ const ConversationContainer = ({
           ></MessageContainer>
         ))}
       </div>
-      <div className="w-full flex mt-auto ">
-        <input
-          className="col-span-7 rounded-md w-auto flex-1"
-          type="text"
-          value={sendingMessage}
-          onChange={({ target }) => setSendingMessage(target.value)}
-        ></input>
-        <button className="bg-slate-500 rounded-md px-2" onClick={sendMessage}>
-          Send
-        </button>
-      </div>
+      <ChatBox sendMessage={sendMessage}></ChatBox>
     </div>
   );
 };

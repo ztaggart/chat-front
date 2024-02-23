@@ -18,11 +18,6 @@ export const UserContext = createContext(
   }
 );
 
-const SOCKET_URL = "http://localhost:8080/chat";
-export const StompContext = createContext({
-  stompClient: over(new SockJS(SOCKET_URL)),
-});
-
 function App() {
   const [userData, setUserData, logOut] = useUserData();
   const [activeConversation, setActiveConversation] = useState<
